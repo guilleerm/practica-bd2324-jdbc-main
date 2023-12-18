@@ -20,22 +20,20 @@ public class Main {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
 
-        // apartado 1
-/*        nuevoAutor("Guillermo Rojo");
+        // PUNTO 1
+
+        /*nuevoAutor("Guillermo Rojo");
         nuevoAutor("Diego Blanco");
         nuevoAutor("Marianela Estévez");
         nuevoAutor("Alejandro Lalana");*/
 
-        //APARTADO 2
+        //PUNTO 2
+
         //listaArticulosPorAutor("Ortega F.", 2021);
 
+        //PUNTO 3
 
-
-
-
-
-
-
+        listaAfiliaciones();
 
 
         // @TODO Prueba sus funciones
@@ -51,7 +49,7 @@ public class Main {
         // Genera el id de forma aleatoria
 
         String url = "jdbc:mysql://" + DB_SERVER + ":" + DB_PORT + "/" + DB_NAME;
-        try{
+        try {
             Connection conn = DriverManager.getConnection(url, DB_USER, DB_PASS);
 
             String sql = "INSERT INTO author(author_id, author_name, importance) VALUES(?, ?, 0)";
@@ -65,8 +63,11 @@ public class Main {
             stmt.executeUpdate();
             stmt.close();
             conn.close();
-        }catch (SQLException e){
-            throw e;
+
+            System.out.println("Autor: " + authorName + " añadido");
+
+        } catch (SQLException e) {
+            System.out.println("Error");
         }
     }
 
@@ -78,32 +79,58 @@ public class Main {
         Statement stmt = null;
         ResultSet rs = null;
 
-        try{
+        try {
             Connection conn = DriverManager.getConnection(url, DB_USER, DB_PASS);
 
-            //String sql = "SELECT article.title, article.publication_date FROM article INNER JOIN author_article ON article.DOI = author_article.DOI INNER JOIN author ON author_article.author_id = author.author_id WHERE author.author_name = '" + authorName + "' AND YEAR(article.publication_date) = " + year + ";";
-            String sql = "";
+            String sql = "SELECT article.title, article.publication_date\n" +
+                    "FROM article\n" +
+                    "JOIN author_article ON article.DOI = author_article.DOI\n" +
+                    "JOIN author ON author_article.author_id = author.author_id\n" +
+                    "WHERE author.author_name = 'Ortega F.' AND YEAR(article.publication_date) = 2021;";
 
             stmt = conn.createStatement();
-            if(stmt.execute(sql)){
+            if (stmt.execute(sql)) {
                 rs = stmt.getResultSet();
-                while(rs.next()){
+                while (rs.next()) {
                     System.out.println(rs.getString("title") + " " + rs.getString("publication_date"));
                 }
             }
             stmt.close();
             conn.close();
-        }catch (SQLException e){
-            throw e;
+        } catch (SQLException e) {
+            System.out.println("Error");
         }
-
-
     }
 
     private static void listaAfiliaciones() throws SQLException {
         // @TODO Muestra por pantalla una lista de las instituciones y el numero de autores que
         //  tienen ordenados de más a menos autores
 
+        String url = "jdbc:mysql://" + DB_SERVER + ":" + DB_PORT + "/" + DB_NAME;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            Connection conn = DriverManager.getConnection(url, DB_USER, DB_PASS);
+
+            String sql = "SELECT affiliation.affiliation_name, COUNT(author_affiliation.author_id) AS num_autores\n" +
+                    "FROM author_affiliation\n" +
+                    "JOIN affiliation ON author_affiliation.affiliation_id = affiliation.affiliation_id\n" +
+                    "GROUP BY affiliation.affiliation_name\n" +
+                    "ORDER BY num_autores DESC;";
+
+            stmt = conn.createStatement();
+            if (stmt.execute(sql)) {
+                rs = stmt.getResultSet();
+                while (rs.next()) {
+                    System.out.println(rs.getString("affiliation_name") + " " + rs.getString("num_autores"));
+                }
+            }
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("Error");
+        }
     }
 }
 
