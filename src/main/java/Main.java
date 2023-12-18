@@ -1,7 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Random;
 
 
@@ -30,35 +27,13 @@ public class Main {
         nuevoAutor("Alejandro Lalana");*/
 
         //APARTADO 2
-        listaArticulosPorAutor("Ortega F.", 2021);
+        //listaArticulosPorAutor("Ortega F.", 2021);
 
 
 
 
 
 
-        // ESTO ES UNA PRUEBA
-/*
-        String url = "jdbc:mysql://" + DB_SERVER + ":" + DB_PORT + "/" + DB_NAME;
-        Connection conn = DriverManager.getConnection(url, DB_USER, DB_PASS);
-
-       PreparedStatement stmt = conn.prepareStatement("SELECT * FROM author WHERE importance = 100");
-        //stmt.setString(1, "100");
-
-        ResultSet resultSet = stmt.executeQuery();
-
-        while (resultSet.next()) {
-            String authorId = resultSet.getString("author_id");
-            String name = resultSet.getString("author_name");
-            String importance = resultSet.getString("importance");
-            System.out.println(authorId + " " + name + " " + importance);
-        }
-
-        resultSet.close();
-        stmt.close();
-        conn.close();
-
-        */
 
 
 
@@ -100,16 +75,22 @@ public class Main {
         //  autor y año
 
         String url = "jdbc:mysql://" + DB_SERVER + ":" + DB_PORT + "/" + DB_NAME;
+        Statement stmt = null;
+        ResultSet rs = null;
+
         try{
             Connection conn = DriverManager.getConnection(url, DB_USER, DB_PASS);
 
-            String sql = "SELECT article.title, article.publication_date FROM article INNER JOIN author_article ON article.DOI = author_article.DOI INNER JOIN author ON author_article.author_id = author.author_id WHERE author.author_name = 'Ortega F.' AND YEAR(article.publication_date) = 2021;";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+            //String sql = "SELECT article.title, article.publication_date FROM article INNER JOIN author_article ON article.DOI = author_article.DOI INNER JOIN author ON author_article.author_id = author.author_id WHERE author.author_name = '" + authorName + "' AND YEAR(article.publication_date) = " + year + ";";
+            String sql = "";
 
-            stmt.setString(1, authorName);
-            stmt.setInt(2, year);
-
-            stmt.executeQuery();
+            stmt = conn.createStatement();
+            if(stmt.execute(sql)){
+                rs = stmt.getResultSet();
+                while(rs.next()){
+                    System.out.println(rs.getString("title") + " " + rs.getString("publication_date"));
+                }
+            }
             stmt.close();
             conn.close();
         }catch (SQLException e){
