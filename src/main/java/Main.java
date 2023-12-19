@@ -33,7 +33,7 @@ public class Main {
 
         //PUNTO 3
 
-        listaAfiliaciones();
+        //listaAfiliaciones();
 
 
         // @TODO Prueba sus funciones
@@ -86,7 +86,7 @@ public class Main {
                     "FROM article\n" +
                     "JOIN author_article ON article.DOI = author_article.DOI\n" +
                     "JOIN author ON author_article.author_id = author.author_id\n" +
-                    "WHERE author.author_name = 'Ortega F.' AND YEAR(article.publication_date) = 2021;";
+                    "WHERE author.author_name = '" + authorName + "' AND YEAR(article.publication_date) = " + year + ";";
 
             stmt = conn.createStatement();
             if (stmt.execute(sql)) {
